@@ -9,35 +9,95 @@ function Header(){
       <div className="container header-inner">
         <div className="brand">
           <div className="logo-container">
-            <div className="logo-circle">
-              <svg width="60" height="60" viewBox="0 0 100 100" className="fiti-logo">
-                <defs>
-                  <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#2B5F7A" />
-                    <stop offset="100%" stopColor="#16A69A" />
-                  </linearGradient>
-                </defs>
-                <circle cx="50" cy="50" r="45" fill="url(#logoGradient)" />
-                <path d="M20 40 Q50 30 80 40" stroke="rgba(255,255,255,0.8)" strokeWidth="3" fill="none" />
-                <path d="M20 50 Q50 40 80 50" stroke="rgba(255,255,255,0.6)" strokeWidth="3" fill="none" />
-                <path d="M20 60 Q50 50 80 60" stroke="rgba(255,255,255,0.4)" strokeWidth="3" fill="none" />
-              </svg>
-            </div>
-            <div className="brand-text">
-              <div className="brand-name main">Fisheries</div>
-              <div className="brand-name">Transparency</div>
-              <div className="brand-name">Initiative</div>
-            </div>
+            <a href="#" className="logo-link" onClick={(e)=>{ e.preventDefault(); window.location.reload(); }} aria-label="Reload page">
+              <img 
+                src="/fiti-clon/images/logo.png" 
+                alt="FiTI Logo" 
+                className="fiti-logo"
+              />
+            </a>
           </div>
         </div>
-        <nav className="nav">
-          <a href="#about">About ▾</a>
-          <a href="#countries">Countries ▾</a>
-          <a href="#approach">Approach ▾</a>
-          <a href="#programmes">Programmes ▾</a>
-          <a href="#governance">Governance ▾</a>
-          <a href="#resources">Resources ▾</a>
-          <a href="#join" className="btn join-btn">Join</a>
+        <nav className="nav" aria-label="Main navigation">
+          <ul className="nav-list">
+            <li className="nav-item">
+              <a href="#about" aria-haspopup="true">About ▾</a>
+              <ul className="dropdown">
+                <li><a href="#about">The FiTI</a></li>
+                <li><a href="#approach">Timeline</a></li>
+                <li><a href="#programmes">FiTI Standard</a></li>
+                <li><a href="#programmes">Benefits</a></li>
+                <li><a href="#programmes">Partnerships</a></li>
+                <li><a href="#programmes">International Secretariat</a></li>
+                <li><a href="#programmes">Careers</a></li>
+              </ul>
+            </li>
+            <li className="nav-item">
+              <a href="#countries" aria-haspopup="true">Countries ▾</a>
+              <ul className="dropdown">
+                <li><a href="#countries">Compliant Countries</a></li>
+                <li><a href="#countries">Candidate Countries</a></li>
+                <li><a href="#countries">Committed Countries</a></li>
+                <li><a href="#countries">Target Countries</a></li>
+              </ul>
+            </li>
+            <li className="nav-item">
+              <a href="#approach" aria-haspopup="true">Approach ▾</a>
+              <ul className="dropdown">
+                <li><a href="#standard">Join the FiTI</a></li>
+                <li><a href="#">Sign-up steps</a></li>
+                <li><a href="#">Candidate application</a></li>
+                <li><a href="#">FiTI Reports</a></li>
+                <li><a href="#">Progressive improvement</a></li>
+                <li><a href="#">Validation</a></li>
+              </ul>
+            </li>
+            <li className="nav-item">
+              <a href="#programmes" aria-haspopup="true">Programmes ▾</a>
+              <ul className="dropdown">
+                <li><a href="#">tBrief series</a></li>
+                <li><a href="#">TAKING STOCK</a></li>
+                <li><a href="#">#KnowYourFisheries</a></li>
+                <li><a href="#">beneFiTIng</a></li>
+              </ul>
+            </li>
+            <li className="nav-item">
+              <a href="#governance">Governance ▾</a>
+              <ul className="dropdown">
+                <li><a href="#">Association</a></li>
+                <li><a href="#">International Board</a></li>
+                <li><a href="#">Funding</a></li>
+                <li><a href="#">Guiding Documents</a></li>
+                <li><a href="#">Compliance Channel</a></li>
+              </ul>
+            </li>
+            <li className="nav-item">
+              <a href="#resources" aria-haspopup="true">Resources ▾</a>
+              <ul className="dropdown">
+                <li><a href="#">News, Updates, Blogs</a></li>
+                <li><a href="#">Glossary</a></li>
+                <li><a href="#">FAQs</a></li>
+                <li><a href="#">Dictionary</a></li>
+                <li><a href="#">Document Library</a></li>
+              </ul>
+            </li>
+            <li className="nav-item nav-search">
+              <button className="search-toggle" aria-label="Open search" aria-haspopup="true">
+                {/* Magnifying glass icon */}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                  <path d="M11 19a8 8 0 1 1 5.293-14.293A8 8 0 0 1 11 19z" stroke="#1e4a66" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M21 21l-4.35-4.35" stroke="#1e4a66" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+
+              <div className="dropdown search-dropdown" role="search">
+                <form className="search-form" onSubmit={(e)=>{ e.preventDefault(); /* TODO: integrate search */ }}>
+                  <input type="search" name="q" className="search-input" placeholder="Search …" aria-label="Search" />
+                  <button type="submit" className="btn search-btn">Search</button>
+                </form>
+              </div>
+            </li>
+          </ul>
         </nav>
       </div>
     </header>
@@ -53,83 +113,59 @@ function Hero(){
         <p className="lead">The Fisheries Transparency Initiative (FiTI) contributes to the sustainability of marine fisheries by supporting coastal countries to enhance the accessibility, credibility and usability of national fisheries management information.</p>
         <div className="hero-actions">
           <a className="btn primary" href="#join">Join the FiTI</a>
-          <a className="btn ghost" href="#learn">Learn more</a>
         </div>
       </div>
     </section>
   )
 }
 
+// Feature card component + items
 function FeatureCard({icon,title,desc}){
   return (
     <div className="feature-card">
       <div className="feature-icon-shield">
-        {/* Renderiza el SVG incrustado */}
-        <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="shield-icon" dangerouslySetInnerHTML={{__html:icon}} />
+        <img src={icon} alt="" className="shield-icon" />
       </div>
       <h3>{title}</h3>
-      <p className="feature-desc">{desc}</p>
+      <p>{desc}</p>
     </div>
   )
 }
 
+const items = [
+  { 
+    title:'Fisheries management',
+    desc:'The FiTI focuses on public access to information for 12 thematic areas of marine capture fisheries, such as fishing licenses, vessel registry, catch data, subsidies and beneficial ownership.',
+    icon:'/fiti-clon/images/icons/fisheries-management.png'
+  },
+  { 
+    title:'Collective Action',
+    desc:'Transparency needs trust! This is why the FiTI is implemented through National Multi-Stakeholder Groups, equally represented by government, companies and civil society.',
+    icon:'/fiti-clon/images/icons/collective-action.png'
+  },
+  { 
+    title:'Visibility & Usability',
+    desc:'Transparency requires a two-sided approach: making data available in the public domain, and ensuring that stakeholders can draw reliable conclusions from it.',
+    icon:'/fiti-clon/images/icons/visibility-usability.png'
+  },
+  { 
+    title:'Progressive Improvement',
+    desc:'Countries are not expected to have complete data for every thematic area from the beginning. Instead, public authorities must disclose the information they have, and where important gaps exist, demonstrate improvements over time.',
+    icon:'/fiti-clon/images/icons/progressive-improvement.png'
+  },
+  { 
+    title:'Quality At Source',
+    desc:'The FiTI does not replace or duplicate existing government systems. Instead, the need for national authorities to develop and strengthen their own systems for collecting and publishing information online is emphasised.',
+    icon:'/fiti-clon/images/icons/quality-source.png'
+  },
+  { 
+    title:'Robust Assurance',
+    desc:'The FiTI International Board undertakes regular evaluations to verify compliance of all participating countries against the FiTI Standard. This covers the provision of FiTI Reports, the meaningful involvement of stakeholders, as well as the impact of the FiTI in the country.',
+    icon:'/fiti-clon/images/icons/robust-assurance.png'
+  }
+]
+
 function Features(){
-  const SVG_COLOR = "#1e4a66"; // Color principal del ícono
-
-  const items = [
-    { 
-      title:'Fisheries Management', 
-      desc:'The FiTI focuses on public access to information for 12 thematic areas of marine capture fisheries, such as fishing licenses, vessel registry, catch data, subsidies and beneficial ownership.', 
-      // SVG para Gestión Pesquera (Target con Flecha)
-      icon:`<circle cx="50" cy="50" r="40" stroke="${SVG_COLOR}" stroke-width="4" fill="none"/>
-            <circle cx="50" cy="50" r="25" stroke="${SVG_COLOR}" stroke-width="4" fill="none"/>
-            <path d="M50 50 L75 25" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>
-            <circle cx="75" cy="25" r="5" fill="${SVG_COLOR}"/>`
-    },
-    { 
-      title:'Collective Action', 
-      desc:'Transparency needs trust! This is why the FiTI is implemented through National Multi-Stakeholder Groups, equally represented by government, companies and civil society.', 
-      // SVG para Acción Colectiva (Múltiples manos)
-      icon:`<path d="M50 20 L20 40 L30 70 L70 70 L80 40 Z" stroke="${SVG_COLOR}" stroke-width="3" fill="none" stroke-linejoin="round"/>
-            <path d="M50 35 L50 60" stroke="${SVG_COLOR}" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="50" cy="50" r="5" fill="${SVG_COLOR}"/>
-            <path d="M40 70 L60 70" stroke="${SVG_COLOR}" stroke-width="3" stroke-linecap="round"/>`
-    },
-    { 
-      title:'Visibility & Usability', 
-      desc:'Transparency requires a two-sided approach: making data available in the public domain, and ensuring that stakeholders can draw reliable conclusions from it.', 
-      // SVG para Visibilidad y Usabilidad (Engranajes)
-      icon:`<circle cx="50" cy="50" r="35" stroke="${SVG_COLOR}" stroke-width="4" fill="none"/>
-            <path d="M50 15 L50 30 M50 70 L50 85 M15 50 L30 50 M70 50 L85 50" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>
-            <path d="M70 30 L60 40 M30 70 L40 60 M70 70 L60 60 M30 30 L40 40" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>`
-    },
-    { 
-      title:'Progressive Improvement', 
-      desc:'Countries are not expected to have complete data for every thematic area from the beginning. Instead, public authorities must disclose the information they have, and where important gaps exist, demonstrate improvements over time.', 
-      // SVG para Mejora Progresiva (Gráfico ascendente)
-      icon:`<path d="M20 75 L35 55 L55 65 L70 45 L85 35" stroke="${SVG_COLOR}" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="20" y1="75" x2="85" y2="75" stroke="${SVG_COLOR}" stroke-width="3" stroke-linecap="round"/>
-            <line x1="20" y1="75" x2="20" y2="25" stroke="${SVG_COLOR}" stroke-width="3" stroke-linecap="round"/>`
-    },
-    { 
-      title:'Quality At Source', 
-      desc:'The FiTI does not replace or duplicate existing government systems. Instead, the need for national authorities to develop and strengthen their own systems for collecting and publishing information online is emphasised.', 
-      // SVG para Calidad en la Fuente (PC/Monitor)
-      icon:`<rect x="20" y="30" width="60" height="40" rx="5" stroke="${SVG_COLOR}" stroke-width="4" fill="none"/>
-            <line x1="50" y1="70" x2="50" y2="80" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>
-            <line x1="40" y1="80" x2="60" y2="80" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>
-            <rect x="25" y="35" width="50" height="30" fill="${SVG_COLOR}" opacity="0.1"/>`
-    },
-    { 
-      title:'Robust Assurance', 
-      desc:'The FiTI International Board undertakes regular evaluations to verify compliance of all participating countries against the FiTI Standard. This covers the provision of FiTI Reports, the meaningful involvement of stakeholders, as well as the impact of the FiTI in the country.', 
-      // SVG para Garantía Robusta (Lupa sobre gráfico)
-      icon:`<path d="M50 75 A25 25 0 1 0 50 25 A25 25 0 0 0 50 75" stroke="${SVG_COLOR}" stroke-width="4" fill="none"/>
-            <line x1="68" y1="70" x2="85" y2="85" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>
-            <path d="M30 40 C 35 35, 65 35, 70 40" stroke="${SVG_COLOR}" stroke-width="3" fill="none"/>`
-    }
-  ]
-
   return (
     <section className="features" id="about">
       <div className="container">
@@ -280,8 +316,7 @@ function News(){
   const posts = [
     {
       title:'International students explore collective action through FiTI', 
-      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen de la videollamada.
-      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../video-call-students.jpg)', 
+      img:'/fiti-clon/images/news/conferencia.png',  // Imagen real de la videollamada de estudiantes 
       excerpt:'Students from Europe and Latin America explored the FiTI, the FiTI Standard and its multi-stakeholder approach to advancing sustainable fisheries management.',
       author: 'News, Uruguay',
       date: '6 October 2025',
@@ -289,8 +324,7 @@ function News(){
     },
     {
       title:'New FiTI Compliance Channel provides avenue to voice concerns about national FiTI implementations', 
-      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen del diagrama de Compliance.
-      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../compliance-diagram.png)', 
+      img:'/fiti-clon/images/news/compliance.png', // Imagen real del canal de compliance 
       excerpt:'Today, the Fisheries Transparency Initiative (FiTI) launched its global FiTI Compliance Channel to support the integrity of national FiTI implementations.',
       author: 'By Dorothea Garff',
       date: '6 October 2025',
@@ -298,8 +332,7 @@ function News(){
     },
     {
       title:'FiTI supports implementation of WTO Agreement on Fisheries Subsidies with new Fisheries Information System (FIS)', 
-      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen de la reunión de la OMC.
-      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../wto-fisheries-subsidies.jpg)', 
+      img:'/fiti-clon/images/news/navigatingdigital.png', // Imagen real de la conferencia/foro 
       excerpt:'The FiTI announced the launch of the new Fisheries Information System (FIS), a platform that will allow countries to effectively share fisheries information with the public.',
       author: 'By Sven Biermann',
       date: '19 September 2025',
@@ -307,8 +340,7 @@ function News(){
     },
     {
       title:'Supporting Resilient Prosperity in the Caribbean', 
-      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen de la reunión del Caribe.
-      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../caribbean-regional-dialogue.jpg)', 
+      img:'/fiti-clon/images/news/ECS.png', // Imagen real del diálogo del Caribe 
       excerpt:'The FiTI International Secretariat attended the Caribbean Regional Dialogue to explore "Advancing Resilient Prosperity" in small island developing states.',
       author: 'By Tyann Henry',
       date: '26 August 2025',
@@ -316,8 +348,7 @@ function News(){
     },
     {
       title:'FiTI, fisheries transparency discussed in preparation for Cabo Verde\'s 1st Congress of the Fisheries and Aquaculture Sector', 
-      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen de Cabo Verde.
-      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../cabo-verde-coast.jpg)', 
+      img:'/fiti-clon/images/news/boats.png', // Imagen real de barcos/costa de Cabo Verde 
       excerpt:'The Fisheries Transparency Initiative (FiTI), participated in the Preparatory Day of the 1st Congress of the Fisheries and Aquaculture Sector (CESPA 2026-2036).',
       author: 'By Hiliana Silva',
       date: '21 August 2025',
@@ -325,8 +356,7 @@ function News(){
     },
     {
       title:'Ghana inaugurates National Multi-Stakeholder Group (MSG) for fisheries transparency', 
-      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen de la inauguración en Ghana.
-      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../ghana-msg-inauguration.jpg)', 
+      img:'/fiti-clon/images/news/reunion.png', // Imagen real de la inauguración en Ghana 
       excerpt:'The FiTI supported the Republic of Ghana to inaugurate a National Multi-Stakeholder Group to facilitate the effective implementation of the FiTI in Ghana.',
       author: 'By Godfred Ameyaw Asiedu',
       date: '1 August 2025',
@@ -334,8 +364,7 @@ function News(){
     },
     {
       title:'Latest TAKING STOCK assessment shines light on Indonesia\'s fisheries management transparency', 
-      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen del informe de Indonesia.
-      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../indonesia-taking-stock.png)', 
+      img:'/fiti-clon/images/news/image.png', // Imagen real del informe de Indonesia 
       excerpt:'A new TAKING STOCK assessment by the Fisheries Transparency Initiative (FiTI) explores the online transparency of Indonesia\'s marine fisheries management.',
       author: 'By Andre Standing',
       date: '25 July 2025',
@@ -423,14 +452,6 @@ function Footer(){
             <div className="footer-col">
               <h4>Fisheries Transparency Initiative</h4>
               <p>Highway Point Building, PO Box 6079<br/>Providence, Mahé, Seychelles</p>
-              <div className="social-icons">
-                <a href="#" aria-label="Twitter">🐦</a>
-                <a href="#" aria-label="LinkedIn">💼</a>
-                <a href="#" aria-label="YouTube">📺</a>
-                <a href="#" aria-label="Facebook">📘</a>
-                <a href="#" aria-label="Instagram">📷</a>
-                <a href="#" aria-label="Bluesky">🦋</a>
-              </div>
             </div>
             <div className="footer-col">
               <h4>Recent posts</h4>

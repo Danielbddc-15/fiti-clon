@@ -58,12 +58,25 @@ a {
   display: flex;
   align-items: center;
   gap: 0.8rem; /* Reducido para parecer más compacto */
+  padding-left: 1rem; /* pequeño espaciado izquierdo */
 }
+.logo-link{
+  display:flex;
+  align-items:center;
+  cursor: pointer; /* mostrar pointer sobre el logo */
+  text-decoration: none;
+}
+.logo-link img{ display:block; }
 .fiti-logo {
-  width: 50px; /* Reducido ligeramente */
-  height: 50px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  height: 64px; /* altura óptima para la cabecera */
+  width: auto; /* mantiene la proporción nativa del logo */
+  max-height: 80px; /* evita overflow si el header se agranda */
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
+  object-fit: contain;
 }
+
+/* If the source image has whitespace, visually center it with a small negative margin tweak */
+.logo-container .fiti-logo { margin-top: 0; margin-bottom: 0; }
 .brand-text {
   display: flex;
   flex-direction: column;
@@ -86,15 +99,29 @@ a {
   align-items: center;
   gap: 0.2rem; /* Menor espacio entre ítems */
 }
+.nav-list {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  position: relative; /* needed for absolute dropdown */
+}
+
 .nav a {
   color: var(--muted);
   text-decoration: none;
-  font-weight: 500;
-  font-size: 14px; /* Ligeramente más pequeño */
-  padding: 0.8rem 0.9rem;
+  font-weight: 600;
+  font-size: 16px; /* Aumentado para mayor legibilidad */
+  padding: 0.9rem 1rem;
   transition: color 0.2s ease, background 0.2s ease;
   position: relative;
   border-radius: 4px; /* Añadir un poco de redondeo */
+  cursor: pointer;
 }
 .nav a:hover {
   color: var(--primary-blue);
@@ -131,6 +158,126 @@ a {
   box-shadow: 0 4px 12px rgba(43, 95, 122, 0.3);
 }
 
+/* Dropdown styles (slide down on hover/focus) */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(14, 30, 37, 0.12);
+  padding: 0.5rem 0;
+  overflow: hidden;
+  transform-origin: top center;
+  transform: translateY(-6px) scaleY(0.95);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 220ms cubic-bezier(.2,.9,.2,1), opacity 180ms ease, visibility 1ms linear 220ms;
+  z-index: 80;
+}
+.dropdown li {
+  list-style: none;
+}
+.dropdown a {
+  display: block;
+  padding: 0.6rem 1rem;
+  color: var(--primary-blue);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.dropdown a:hover {
+  background: #f5fbfa;
+  color: var(--accent-teal);
+}
+
+/* Show dropdown on hover or keyboard focus */
+.nav-item:hover > .dropdown,
+.nav-item:focus-within > .dropdown {
+  transform: translateY(0) scaleY(1);
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0ms;
+}
+
+/* Make sure the join button stays visually consistent in the list */
+.nav-item .join-btn {
+  margin-left: 0;
+}
+
+/* Search toggle (icon) */
+.nav-search {
+  display: flex;
+  align-items: center;
+}
+.search-toggle {
+  background: transparent;
+  border: 0;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.search-toggle svg path {
+  transition: stroke 0.18s ease, transform 0.18s ease;
+}
+.search-toggle:hover svg path,
+.nav-item:focus-within .search-toggle svg path {
+  stroke: var(--accent-teal);
+  transform: scale(1.02);
+}
+
+/* Search dropdown specifics */
+.search-dropdown {
+  left: auto; /* allow right alignment if needed */
+  min-width: 320px;
+  padding: 0.75rem;
+}
+.search-form {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+.search-input {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e6eef1;
+  font-size: 0.95rem;
+  outline: none;
+  box-shadow: none;
+}
+.search-input:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 6px 20px rgba(14, 30, 37, 0.06);
+}
+.search-btn {
+  background: var(--primary-blue);
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 24px;
+  border: none;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.search-btn:hover {
+  background: var(--accent-teal);
+}
+
+/* Positioning & show/hide rules for the search dropdown */
+.nav-search .dropdown {
+  right: 0; /* align to the right edge of the nav item */
+  left: auto;
+}
+.nav-search:hover > .search-dropdown,
+.nav-search:focus-within > .search-dropdown {
+  transform: translateY(0) scaleY(1);
+  opacity: 1;
+  visibility: visible;
+}
+
 /* --- Hero --- */
 .hero {
   position: relative;
@@ -153,10 +300,10 @@ a {
 }
 .hero-inner {
   position: relative;
-  text-align: center;
+  text-align: left; /* Texto alineado a la izquierda dentro del bloque centrado */
   padding: 6rem 2rem;
   max-width: 900px;
-  margin: 0 auto;
+  margin: 0 auto; /* Mantiene el bloque centrado en la página */
 }
 .hero-title {
   font-size: 3rem; /* Ligeramente reducido */
@@ -175,7 +322,7 @@ a {
 .hero-actions {
   display: flex;
   gap: 1.5rem;
-  justify-content: center;
+  justify-content: flex-start; /* Alinea el botón a la izquierda respecto al texto */
   flex-wrap: wrap;
 }
 .hero-actions .btn {
@@ -244,28 +391,67 @@ a {
 .feature-card {
   background: white;
   padding: 2.5rem 2rem;
-  border-radius: 10px;
+  border-radius: 12px;
   text-align: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-top: 5px solid var(--accent-teal); /* Detalle de línea superior */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-top: 4px solid var(--accent-teal);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(22, 166, 154, 0.1), transparent);
+  transition: left 0.6s ease;
 }
 .feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(22, 166, 154, 0.2), 0 5px 15px rgba(0, 0, 0, 0.1);
+  border-top-color: var(--primary-blue);
+}
+.feature-card:hover::before {
+  left: 100%;
 }
 .feature-icon-shield {
   margin: 0 auto 1.5rem;
-  width: 70px; /* Tamaño ajustado */
-  height: 70px;
-  background: #e6f1f4; /* Fondo más claro */
-  border-radius: 50%; /* Iconos en círculo */
+  width: 100px;
+  height: 120px;
+  background: linear-gradient(135deg, #e6f7f5, #d1f2ef);
+  border-radius: 50px 50px 0 0;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.4s ease;
+  box-shadow: 0 4px 15px rgba(22, 166, 154, 0.1);
+  border: 3px solid var(--primary-blue);
+  position: relative;
+}
+.feature-card:hover .feature-icon-shield {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, var(--accent-teal), var(--primary-blue));
+  box-shadow: 0 8px 25px rgba(22, 166, 154, 0.3);
+  border-color: var(--accent-teal);
 }
 .shield-icon {
   color: var(--primary-blue);
+  transition: all 0.3s ease;
+  filter: none;
+  width: 50px !important;
+  height: 50px !important;
+  position: relative;
+  top: -8px;
+}
+.feature-card:hover .shield-icon {
+  color: white;
+  transform: scale(1.1);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 .feature-card h3 {
   margin: 0 0 0.8rem;
@@ -273,12 +459,22 @@ a {
   font-size: 1.3rem;
   font-weight: 700;
   line-height: 1.3;
+  transition: all 0.3s ease;
+}
+.feature-card:hover h3 {
+  color: var(--accent-teal);
+  transform: translateY(-2px);
 }
 .feature-desc {
   color: var(--muted);
   font-size: 0.95rem;
+  transition: all 0.3s ease;
   line-height: 1.6;
-  text-align: center; /* Alineación centrada para las tarjetas */
+  text-align: center;
+}
+.feature-card:hover .feature-desc {
+  color: #555;
+  transform: translateY(-1px);
 }
 
 /* --- FiTI Standard Section --- */
@@ -362,19 +558,25 @@ a {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.3s ease; /* Transición suave para todos los efectos */
   border: 1px solid #e2e8f0;
+  cursor: pointer; /* Cursor de redirección */
 }
 .flag-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px) scale(1.03); /* Efecto elevación + zoom */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 .flag-item img {
   width: 100%;
   height: auto;
   aspect-ratio: 3/2;
-  object-fit: cover;
+  object-fit: contain; /* Mostrar bandera completa sin recortar */
   display: block;
+  background-color: #f8fafc; /* Fondo claro para banderas con transparencia */
+  transition: transform 0.3s ease; /* Transición para el zoom de la imagen */
+}
+.flag-item:hover img {
+  transform: scale(1.02); /* Zoom adicional sutil en la imagen */
 }
 
 /* --- Numbers --- */
@@ -457,13 +659,17 @@ a {
 .news-item .thumb {
   flex: 0 0 350px;
   max-width: 350px;
+  overflow: hidden; /* Para contener el zoom */
+  cursor: pointer; /* Cursor de redirección */
 }
 .news-item .thumb img {
   width: 100%;
   height: 250px; /* Altura fija para uniformidad */
-  object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  object-fit: contain; /* Mostrar imagen completa sin recortar */
+  transition: transform 0.3s ease; /* Transición suave para el zoom */
+}
+.news-item .thumb:hover img {
+  transform: scale(1.05); /* Efecto zoom al pasar el mouse */
 }
 .news-body {
   flex: 1;
@@ -487,10 +693,12 @@ a {
   font-size: 1.6rem;
   line-height: 1.2;
   font-weight: 700;
-  transition: color 0.2s ease;
+  transition: all 0.3s ease; /* Transición para color y zoom */
+  cursor: pointer; /* Cursor de redirección */
 }
 .news-body h3:hover {
   color: var(--accent-teal);
+  transform: scale(1.02); /* Efecto zoom sutil en el título */
 }
 .news-author {
   display: flex;
@@ -565,6 +773,51 @@ a {
   max-width: 1100px;
   margin: 0 auto;
 }
+/* Make each footer column appear as a subtle panel (like image 2) */
+.footer-col {
+  background: rgba(255,255,255,0.03);
+  padding: 1.6rem 1.4rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset;
+}
+.footer-col h4 {
+  margin: 0 0 1rem;
+  position: relative;
+  padding-bottom: 0.6rem;
+}
+.footer-col h4:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0.12rem;
+  width: 36px;
+  height: 4px;
+  background: var(--primary-blue);
+  border-radius: 2px;
+}
+.footer-col p,
+.footer-col ul li a {
+  color: rgba(255,255,255,0.95);
+}
+.footer-col ul li {
+  list-style: none;
+  margin-bottom: 0.8rem;
+  padding-left: 1.6rem;
+  position: relative;
+}
+.footer-col ul li:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.6);
+  background: transparent;
+}
+
 .footer-col h4 {
   margin: 0 0 1.5rem;
   font-size: 1.1rem;
@@ -710,95 +963,4 @@ a {
   transform: translateY(-2px);
 }
 
-/* --- Responsive Design --- */
-@media (max-width: 1000px) {
-  .countries-content {
-    flex-direction: column;
-    gap: 3rem;
-    text-align: center;
-  }
-  .countries-text {
-    flex: none;
-    padding-right: 0;
-  }
-  .flags-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .footer-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-  }
-  .features-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .numbers-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 2.2rem;
-  }
-  .hero-inner {
-    padding: 4rem 1rem;
-  }
-  .hero-actions {
-    flex-direction: column;
-    align-items: center;
-  }
-  .features-grid {
-    grid-template-columns: 1fr;
-  }
-  .numbers-grid {
-    grid-template-columns: 1fr;
-  }
-  .nav {
-    display: none; /* Ocultar nav en móviles */
-  }
-  .news-item {
-    flex-direction: column;
-    text-align: left;
-    gap: 1.5rem;
-  }
-  .news-item.right {
-    flex-direction: column;
-  }
-  .news-item .thumb {
-    flex: none;
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-  }
-  .footer-grid {
-    grid-template-columns: 1fr;
-  }
-  .section-header h2,
-  .numbers h2,
-  .countries h2,
-  .news h2 {
-    font-size: 1.8rem;
-  }
-  .standard-content h2 {
-    font-size: 2rem;
-  }
-  .header-inner {
-    padding: 0.8rem 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 0 1rem;
-  }
-  .hero-title {
-    font-size: 1.8rem;
-  }
-  .flags-grid {
-    grid-template-columns: repeat(3, 1fr);
-    max-width: 300px;
-  }
-  .social-strip {
-    display: none; /* Ocultar banda social en pantallas muy pequeñas */
-  }
-}
+/* Note: responsive media queries were intentionally removed per user request to eliminate responsiveness changes */
