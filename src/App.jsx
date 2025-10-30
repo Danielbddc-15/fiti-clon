@@ -1,0 +1,493 @@
+import React, { useEffect, useState } from 'react'
+
+// Use hero image from fiti.global
+const HERO_BG = 'https://fiti.global/wp-content/uploads/2021/05/sea-684351-scaled.jpg'
+
+function Header(){
+  return (
+    <header className="site-header">
+      <div className="container header-inner">
+        <div className="brand">
+          <div className="logo-container">
+            <div className="logo-circle">
+              <svg width="60" height="60" viewBox="0 0 100 100" className="fiti-logo">
+                <defs>
+                  <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#2B5F7A" />
+                    <stop offset="100%" stopColor="#16A69A" />
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="45" fill="url(#logoGradient)" />
+                <path d="M20 40 Q50 30 80 40" stroke="rgba(255,255,255,0.8)" strokeWidth="3" fill="none" />
+                <path d="M20 50 Q50 40 80 50" stroke="rgba(255,255,255,0.6)" strokeWidth="3" fill="none" />
+                <path d="M20 60 Q50 50 80 60" stroke="rgba(255,255,255,0.4)" strokeWidth="3" fill="none" />
+              </svg>
+            </div>
+            <div className="brand-text">
+              <div className="brand-name main">Fisheries</div>
+              <div className="brand-name">Transparency</div>
+              <div className="brand-name">Initiative</div>
+            </div>
+          </div>
+        </div>
+        <nav className="nav">
+          <a href="#about">About ▾</a>
+          <a href="#countries">Countries ▾</a>
+          <a href="#approach">Approach ▾</a>
+          <a href="#programmes">Programmes ▾</a>
+          <a href="#governance">Governance ▾</a>
+          <a href="#resources">Resources ▾</a>
+          <a href="#join" className="btn join-btn">Join</a>
+        </nav>
+      </div>
+    </header>
+  )
+}
+
+function Hero(){
+  return (
+    <section className="hero hero--ocean" style={{backgroundImage:`url(${HERO_BG})`}}>
+      <div className="hero-overlay"></div>
+      <div className="container hero-inner">
+        <h1 className="hero-title">Sustainable marine fisheries through transparency and multi-stakeholder collaboration</h1>
+        <p className="lead">The Fisheries Transparency Initiative (FiTI) contributes to the sustainability of marine fisheries by supporting coastal countries to enhance the accessibility, credibility and usability of national fisheries management information.</p>
+        <div className="hero-actions">
+          <a className="btn primary" href="#join">Join the FiTI</a>
+          <a className="btn ghost" href="#learn">Learn more</a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function FeatureCard({icon,title,desc}){
+  return (
+    <div className="feature-card">
+      <div className="feature-icon-shield">
+        {/* Renderiza el SVG incrustado */}
+        <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="shield-icon" dangerouslySetInnerHTML={{__html:icon}} />
+      </div>
+      <h3>{title}</h3>
+      <p className="feature-desc">{desc}</p>
+    </div>
+  )
+}
+
+function Features(){
+  const SVG_COLOR = "#1e4a66"; // Color principal del ícono
+
+  const items = [
+    { 
+      title:'Fisheries Management', 
+      desc:'The FiTI focuses on public access to information for 12 thematic areas of marine capture fisheries, such as fishing licenses, vessel registry, catch data, subsidies and beneficial ownership.', 
+      // SVG para Gestión Pesquera (Target con Flecha)
+      icon:`<circle cx="50" cy="50" r="40" stroke="${SVG_COLOR}" stroke-width="4" fill="none"/>
+            <circle cx="50" cy="50" r="25" stroke="${SVG_COLOR}" stroke-width="4" fill="none"/>
+            <path d="M50 50 L75 25" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="75" cy="25" r="5" fill="${SVG_COLOR}"/>`
+    },
+    { 
+      title:'Collective Action', 
+      desc:'Transparency needs trust! This is why the FiTI is implemented through National Multi-Stakeholder Groups, equally represented by government, companies and civil society.', 
+      // SVG para Acción Colectiva (Múltiples manos)
+      icon:`<path d="M50 20 L20 40 L30 70 L70 70 L80 40 Z" stroke="${SVG_COLOR}" stroke-width="3" fill="none" stroke-linejoin="round"/>
+            <path d="M50 35 L50 60" stroke="${SVG_COLOR}" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="50" cy="50" r="5" fill="${SVG_COLOR}"/>
+            <path d="M40 70 L60 70" stroke="${SVG_COLOR}" stroke-width="3" stroke-linecap="round"/>`
+    },
+    { 
+      title:'Visibility & Usability', 
+      desc:'Transparency requires a two-sided approach: making data available in the public domain, and ensuring that stakeholders can draw reliable conclusions from it.', 
+      // SVG para Visibilidad y Usabilidad (Engranajes)
+      icon:`<circle cx="50" cy="50" r="35" stroke="${SVG_COLOR}" stroke-width="4" fill="none"/>
+            <path d="M50 15 L50 30 M50 70 L50 85 M15 50 L30 50 M70 50 L85 50" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>
+            <path d="M70 30 L60 40 M30 70 L40 60 M70 70 L60 60 M30 30 L40 40" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>`
+    },
+    { 
+      title:'Progressive Improvement', 
+      desc:'Countries are not expected to have complete data for every thematic area from the beginning. Instead, public authorities must disclose the information they have, and where important gaps exist, demonstrate improvements over time.', 
+      // SVG para Mejora Progresiva (Gráfico ascendente)
+      icon:`<path d="M20 75 L35 55 L55 65 L70 45 L85 35" stroke="${SVG_COLOR}" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="20" y1="75" x2="85" y2="75" stroke="${SVG_COLOR}" stroke-width="3" stroke-linecap="round"/>
+            <line x1="20" y1="75" x2="20" y2="25" stroke="${SVG_COLOR}" stroke-width="3" stroke-linecap="round"/>`
+    },
+    { 
+      title:'Quality At Source', 
+      desc:'The FiTI does not replace or duplicate existing government systems. Instead, the need for national authorities to develop and strengthen their own systems for collecting and publishing information online is emphasised.', 
+      // SVG para Calidad en la Fuente (PC/Monitor)
+      icon:`<rect x="20" y="30" width="60" height="40" rx="5" stroke="${SVG_COLOR}" stroke-width="4" fill="none"/>
+            <line x1="50" y1="70" x2="50" y2="80" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>
+            <line x1="40" y1="80" x2="60" y2="80" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>
+            <rect x="25" y="35" width="50" height="30" fill="${SVG_COLOR}" opacity="0.1"/>`
+    },
+    { 
+      title:'Robust Assurance', 
+      desc:'The FiTI International Board undertakes regular evaluations to verify compliance of all participating countries against the FiTI Standard. This covers the provision of FiTI Reports, the meaningful involvement of stakeholders, as well as the impact of the FiTI in the country.', 
+      // SVG para Garantía Robusta (Lupa sobre gráfico)
+      icon:`<path d="M50 75 A25 25 0 1 0 50 25 A25 25 0 0 0 50 75" stroke="${SVG_COLOR}" stroke-width="4" fill="none"/>
+            <line x1="68" y1="70" x2="85" y2="85" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>
+            <path d="M30 40 C 35 35, 65 35, 70 40" stroke="${SVG_COLOR}" stroke-width="3" fill="none"/>`
+    }
+  ]
+
+  return (
+    <section className="features" id="about">
+      <div className="container">
+        <div className="section-header"><h2>Core characteristics of the FiTI</h2></div>
+        <div className="features-grid">
+          {items.map((it,idx)=> <FeatureCard key={idx} icon={it.icon} title={it.title} desc={it.desc} />)}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function FiTIStandard(){
+  return (
+    <section className="fiti-standard">
+      <div className="container">
+        <div className="standard-content">
+          <h2>FiTI Standard: Defining for the first time what information on fisheries management should be published online by governments!</h2>
+          <p>The FiTI Standard is an internationally recognised framework that sets clear requirements on what is expected from countries regarding transparency in marine fisheries. It was developed in a 2-year global consultation process with government representatives from fishing nations, industrial and artisanal fishing entities, civil society and intergovernmental organisations.</p>
+          <a href="#standard" className="btn standard-btn">Learn more about the FiTI Standard</a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Countries(){
+  const countries = [
+    {name: 'Mauritania', code:'mr'},
+    {name: 'Seychelles', code:'sc'},
+    {name: 'Cabo Verde', code:'cv'},
+    {name: 'Madagascar', code:'mg'},
+    {name: 'Sao Tome and Principe', code:'st'},
+    {name: 'Ecuador', code:'ec'},
+    {name: 'Guinea', code:'gn'},
+    {name: 'Chile', code:'cl'},
+    {name: 'Comoros', code:'km'},
+    {name: 'Ghana', code:'gh'},
+    {name: 'Sierra Leone', code:'sl'},
+    {name: 'Panama', code:'pa'},
+    {name: 'Liberia', code:'lr'}
+  ]
+  
+  return (
+    <section className="countries" id="countries">
+      <div className="container">
+        <div className="countries-content">
+          <div className="countries-text">
+            <h2>FiTI countries:</h2>
+            <p className="countries-intro">We contribute to the sustainability of marine fisheries by supporting the following countries to enhance the accessibility, credibility and usability of national fisheries management information.</p>
+          </div>
+          <div className="countries-flags">
+            <div className="flags-grid">
+              {countries.map((country, index) => (
+                <div key={index} className="flag-item" title={country.name}>
+                  <img src={`https://flagcdn.com/w320/${country.code}.png`} alt={`${country.name} flag`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Numbers(){
+  const SVG_COLOR = "#1e4a66";
+
+  const stats = [
+    { 
+      n:13, 
+      t:'Governments committed to implement the FiTI Standard', 
+      // Icono: Edificio/Monumento (Gobierno)
+      icon:`<rect x="25" y="35" width="50" height="50" stroke="${SVG_COLOR}" stroke-width="3" fill="none"/>
+            <path d="M25 45 L75 45" stroke="${SVG_COLOR}" stroke-width="3"/>
+            <path d="M35 35 L50 20 L65 35" stroke="${SVG_COLOR}" stroke-width="3" fill="none"/>
+            <rect x="35" y="55" width="10" height="15" fill="${SVG_COLOR}"/>
+            <rect x="55" y="55" width="10" height="15" fill="${SVG_COLOR}"/>`
+    },
+    { 
+      n:16, 
+      t:'Fisheries information reports published by National Multi-Stakeholder Groups', 
+      // Icono: Reporte/Documento (Informes)
+      icon:`<rect x="30" y="20" width="40" height="60" rx="3" stroke="${SVG_COLOR}" stroke-width="3" fill="none"/>
+            <line x1="38" y1="30" x2="62" y2="30" stroke="${SVG_COLOR}" stroke-width="2"/>
+            <line x1="38" y1="40" x2="62" y2="40" stroke="${SVG_COLOR}" stroke-width="2"/>
+            <line x1="38" y1="50" x2="55" y2="50" stroke="${SVG_COLOR}" stroke-width="2"/>`
+    },
+    { 
+      n:99, 
+      t:'Organisations engaged in National Multi-Stakeholder Groups', 
+      // Icono: Múltiples personas/Grupo (Stakeholders)
+      icon:`<circle cx="35" cy="40" r="10" stroke="${SVG_COLOR}" stroke-width="3" fill="none"/>
+            <path d="M35 50 L35 60 A20 20 0 0 0 15 80 L55 80 A20 20 0 0 0 35 60 Z" stroke="${SVG_COLOR}" stroke-width="3" fill="none"/>
+            <circle cx="65" cy="40" r="10" stroke="${SVG_COLOR}" stroke-width="3" fill="none"/>
+            <path d="M65 50 L65 60 A20 20 0 0 0 45 80 L85 80 A20 20 0 0 0 65 60 Z" stroke="${SVG_COLOR}" stroke-width="3" fill="none"/>`
+    },
+    { 
+      n:4, 
+      t:'Country validations conducted to assess compliance against FiTI Standard', 
+      // Icono: Martillo de Juez (Validaciones/Reglas)
+      icon:`<path d="M25 75 L75 75 L70 65 L30 65 Z" fill="${SVG_COLOR}"/>
+            <rect x="45" y="45" width="10" height="20" fill="${SVG_COLOR}"/>
+            <rect x="50" y="25" width="30" height="10" rx="3" fill="${SVG_COLOR}"/>`
+    },
+    { 
+      n:10, 
+      t:"transparency briefings (short 'tBriefs') published in English, French, Spanish", 
+      // Icono: Birrete de Graduación (Educación/Briefings)
+      icon:`<path d="M20 40 L50 25 L80 40 L50 55 Z" stroke="${SVG_COLOR}" stroke-width="3" fill="none"/>
+            <path d="M20 40 L20 65 M80 40 L80 65" stroke="${SVG_COLOR}" stroke-width="3"/>
+            <line x1="20" y1="65" x2="80" y2="65" stroke="${SVG_COLOR}" stroke-width="3"/>
+            <circle cx="50" cy="25" r="5" fill="${SVG_COLOR}"/>`
+    },
+    { 
+      n:14, 
+      t:'TAKING STOCK country transparency assessments conducted', 
+      // Icono: Lupa (Evaluación/TAKING STOCK)
+      icon:`<circle cx="40" cy="40" r="25" stroke="${SVG_COLOR}" stroke-width="4" fill="none"/>
+            <line x1="58" y1="58" x2="85" y2="85" stroke="${SVG_COLOR}" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="40" cy="40" r="5" fill="${SVG_COLOR}"/>`
+    }
+  ]
+  
+  return (
+    <section className="numbers" aria-label="FiTI in numbers">
+      <div className="container">
+        <h2>FiTI in numbers:</h2>
+        <div className="numbers-grid">
+          {stats.map((s,i)=>(
+            <div key={i} className="stat">
+              <div className="stat-icon">
+                {/* Renderiza el SVG incrustado */}
+                <svg width="48" height="48" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" dangerouslySetInnerHTML={{__html:s.icon}} />
+              </div>
+              <div className="num">{s.n}</div>
+              <div className="txt">{s.t}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function News(){
+  const posts = [
+    {
+      title:'International students explore collective action through FiTI', 
+      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen de la videollamada.
+      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../video-call-students.jpg)', 
+      excerpt:'Students from Europe and Latin America explored the FiTI, the FiTI Standard and its multi-stakeholder approach to advancing sustainable fisheries management.',
+      author: 'News, Uruguay',
+      date: '6 October 2025',
+      category: 'News'
+    },
+    {
+      title:'New FiTI Compliance Channel provides avenue to voice concerns about national FiTI implementations', 
+      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen del diagrama de Compliance.
+      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../compliance-diagram.png)', 
+      excerpt:'Today, the Fisheries Transparency Initiative (FiTI) launched its global FiTI Compliance Channel to support the integrity of national FiTI implementations.',
+      author: 'By Dorothea Garff',
+      date: '6 October 2025',
+      category: 'Governance'
+    },
+    {
+      title:'FiTI supports implementation of WTO Agreement on Fisheries Subsidies with new Fisheries Information System (FIS)', 
+      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen de la reunión de la OMC.
+      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../wto-fisheries-subsidies.jpg)', 
+      excerpt:'The FiTI announced the launch of the new Fisheries Information System (FIS), a platform that will allow countries to effectively share fisheries information with the public.',
+      author: 'By Sven Biermann',
+      date: '19 September 2025',
+      category: 'Cabo Verde, Events, Ghana, Madagascar, Sao Tome and Principe'
+    },
+    {
+      title:'Supporting Resilient Prosperity in the Caribbean', 
+      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen de la reunión del Caribe.
+      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../caribbean-regional-dialogue.jpg)', 
+      excerpt:'The FiTI International Secretariat attended the Caribbean Regional Dialogue to explore "Advancing Resilient Prosperity" in small island developing states.',
+      author: 'By Tyann Henry',
+      date: '26 August 2025',
+      category: 'News'
+    },
+    {
+      title:'FiTI, fisheries transparency discussed in preparation for Cabo Verde\'s 1st Congress of the Fisheries and Aquaculture Sector', 
+      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen de Cabo Verde.
+      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../cabo-verde-coast.jpg)', 
+      excerpt:'The Fisheries Transparency Initiative (FiTI), participated in the Preparatory Day of the 1st Congress of the Fisheries and Aquaculture Sector (CESPA 2026-2036).',
+      author: 'By Hiliana Silva',
+      date: '21 August 2025',
+      category: 'Cabo Verde'
+    },
+    {
+      title:'Ghana inaugurates National Multi-Stakeholder Group (MSG) for fisheries transparency', 
+      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen de la inauguración en Ghana.
+      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../ghana-msg-inauguration.jpg)', 
+      excerpt:'The FiTI supported the Republic of Ghana to inaugurate a National Multi-Stakeholder Group to facilitate the effective implementation of the FiTI in Ghana.',
+      author: 'By Godfred Ameyaw Asiedu',
+      date: '1 August 2025',
+      category: 'Ghana, Sign-up steps'
+    },
+    {
+      title:'Latest TAKING STOCK assessment shines light on Indonesia\'s fisheries management transparency', 
+      // 🚨 Reemplazar la URL de Unsplash con la URL real de la imagen del informe de Indonesia.
+      img:'// PEGAR URL REAL DE LA IMAGEN AQUÍ (ej: fiti.global/.../indonesia-taking-stock.png)', 
+      excerpt:'A new TAKING STOCK assessment by the Fisheries Transparency Initiative (FiTI) explores the online transparency of Indonesia\'s marine fisheries management.',
+      author: 'By Andre Standing',
+      date: '25 July 2025',
+      category: 'Indonesia, TAKING STOCK'
+    }
+  ]
+
+  return (
+    <section className="news" id="news">
+      <div className="container">
+        <h2>News, Updates, Blogs</h2>
+        <div className="news-list">
+          {posts.map((p,i)=>(
+            <article key={i} className={`news-item ${i % 2 === 0 ? 'left' : 'right'}`}>
+              <div className="thumb">
+                {/* Usar la URL de la imagen real */}
+                <img src={p.img} alt={p.title} />
+              </div>
+              <div className="news-body">
+                <div className="news-meta">
+                  {/* Dividir categorías por coma y renderizar como etiquetas */}
+                  {p.category.split(',').map((cat, index) => (
+                    <span key={index} className="category">{cat.trim()}</span>
+                  ))}
+                </div>
+                <h3>{p.title}</h3>
+                <div className="news-author">
+                  <span>{p.author}</span>
+                  <span className="date">{p.date}</span>
+                  <span className="comments">0</span>
+                </div>
+                <p className="excerpt">{p.excerpt}</p>
+                <a className="btn read-more" href="#">READ MORE</a>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div className="view-more-container">
+          <a href="#" className="btn view-more">View More</a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function SocialStrip(){
+  return (
+    <div className="social-strip" aria-hidden>
+      <div className="social-strip-inner container">
+        <a href="#" aria-label="Twitter">
+          <svg viewBox="0 0 24 24" aria-hidden><path d="M22 5.8c-.6.3-1.3.6-2 .7.7-.4 1.3-1 1.6-1.8-.6.4-1.4.6-2.2.8C18 4.5 17 4 16 4c-1.7 0-3 1.4-3 3 0 .2 0 .4.1.6C10 7.3 7.1 5.7 5.1 3.2c-.3.6-.5 1.3-.5 2 0 1.4.7 2.6 1.9 3.3-.6 0-1.1-.2-1.6-.4v.1c0 1.7 1.2 3.1 2.8 3.4-.3.1-.7.1-1 .1-.2 0-.5 0-.7-.1.5 1.6 2 2.7 3.7 2.7C8.9 18 7 18.6 5 18.2c1.8 1.1 4 1.8 6.3 1.8 7.6 0 11.8-6.1 11.8-11.4v-.5c.8-.6 1.5-1.3 2-2.1-.8.4-1.6.6-2.4.7z"/></svg>
+          <span>Twitter</span>
+        </a>
+        <a href="#" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" aria-hidden><path d="M4 4h4v16H4zM6 2C4.9 2 4 2.9 4 4s.9 2 2 2 2-.9 2-2S7.1 2 6 2zM9 8h4v2h.1c.6-1 2-2.1 4.2-2.1C22 7.9 23 10 23 13.3V20h-4v-6.2c0-1.5 0-3.5-2.1-3.5-2.1 0-2.4 1.6-2.4 3.4V20H9z"/></svg>
+          <span>LinkedIn</span>
+        </a>
+        <a href="#" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" aria-hidden><path d="M23 7s-.2-1.6-.8-2.3C21 4 19.9 4 19.2 4H4.8C4.1 4 3 4 1.8 4.7 1.2 5.4 1 7 1 7S0.9 9 0.9 11v2c0 2 .1 4 1 4s.2 1.6.8 2.3C3 22 4.1 22 4.8 22h14.4c.7 0 1.8 0 2.9-.7.6-.7.8-2.3.8-2.3s.1-2 .1-4v-2c0-2-.1-4-.1-4zM10 15V9l5 3-5 3z"/></svg>
+          <span>YouTube</span>
+        </a>
+        <a href="#" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" aria-hidden><path d="M22 12.1C22 6.6 17.5 2 12 2S2 6.6 2 12.1C2 17.1 5.7 21.3 10.5 22v-7.1H8.1v-2.8h2.4V10c0-2.4 1.4-3.7 3.5-3.7 1 0 2 .1 2 .1v2.3h-1.2c-1.1 0-1.4.7-1.4 1.4v1.7h2.8l-.4 2.8h-2.4V22C18.3 21.3 22 17.1 22 12.1z"/></svg>
+          <span>Facebook</span>
+        </a>
+        <a href="#" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 6.3A4.7 4.7 0 1 0 16.7 13 4.7 4.7 0 0 0 12 8.3zm6.5-3a1.1 1.1 0 1 1-1.1 1.1A1.1 1.1 0 0 1 18.5 5.3zM12 10.6A1.4 1.4 0 1 1 10.6 12 1.4 1.4 0 0 1 12 10.6z"/></svg>
+          <span>Instagram</span>
+        </a>
+        <a href="#" aria-label="Bluesky">
+          <svg viewBox="0 0 24 24" aria-hidden><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zM8 11.5l4.5-4.5 1.5 1.5L10.5 13l4 4H8v-5.5z"/></svg>
+          <span>Bluesky</span>
+        </a>
+      </div>
+    </div>
+  )
+}
+
+function Footer(){
+  return (
+    <footer className="site-footer">
+      <div className="footer-main">
+        <div className="container">
+          <div className="footer-grid">
+            <div className="footer-col">
+              <h4>Fisheries Transparency Initiative</h4>
+              <p>Highway Point Building, PO Box 6079<br/>Providence, Mahé, Seychelles</p>
+              <div className="social-icons">
+                <a href="#" aria-label="Twitter">🐦</a>
+                <a href="#" aria-label="LinkedIn">💼</a>
+                <a href="#" aria-label="YouTube">📺</a>
+                <a href="#" aria-label="Facebook">📘</a>
+                <a href="#" aria-label="Instagram">📷</a>
+                <a href="#" aria-label="Bluesky">🦋</a>
+              </div>
+            </div>
+            <div className="footer-col">
+              <h4>Recent posts</h4>
+              <ul>
+                <li><a href="#">International students explore collective action through FiTI</a></li>
+                <li><a href="#">New FiTI Compliance Channel provides avenue to voice concerns about national FiTI implementations</a></li>
+                <li><a href="#">FiTI supports implementation of WTO Agreement on Fisheries Subsidies with new Fisheries Information System (FIS)</a></li>
+              </ul>
+            </div>
+            <div className="footer-col">
+              <h4>Key activities</h4>
+              <ul>
+                <li><a href="#">#KnowYourFisheries</a></li>
+                <li><a href="#">beneFiTIng – Incentives for government transparency of marine fisheries management</a></li>
+                <li><a href="#">TAKING STOCK – Online Transparency of Fisheries Management Information</a></li>
+                <li><a href="#">tBrief series</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="footer-bottom">
+        <div className="container">
+          <p>Copyright {new Date().getFullYear()} | Fisheries Transparency Initiative (FiTI) | All rights reserved</p>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+export default function App(){
+  const [showTop, setShowTop] = useState(false)
+
+  useEffect(()=>{
+    const onScroll = () => setShowTop(window.scrollY > 300)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const scrollToTop = () => window.scrollTo({ top:0, behavior:'smooth' })
+
+  return (
+    <div>
+      <Header />
+      <main>
+        <Hero />
+        <Features />
+        <FiTIStandard />
+        <Countries />
+        <News />
+        <Numbers />
+        <SocialStrip />
+      </main>
+      <Footer />
+
+      <button className={`back-to-top ${showTop ? 'visible' : ''}`} aria-label="Back to top" onClick={scrollToTop}>↑</button>
+    </div>
+  )
+}
