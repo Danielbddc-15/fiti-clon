@@ -92,10 +92,18 @@ const fetchAndInjectShellcatchIframe = async (container) => {
       }
     }
 
-    if (json && json.success && json.data && json.data.url) {
-      const data = json.data
+    // Normalize possible JSON shapes from upstream or local fallback
+    let data = null
+    if (json) {
+      if (json.data && (json.data.url || json.data.src)) data = json.data
+      else if (json.url || json.src) data = json
+      else if (json.config && (json.config.url || json.config.src)) data = json.config
+    }
+
+    if (data && (data.url || data.src)) {
+      const src = data.url || data.src
       const iframe = document.createElement('iframe')
-      iframe.src = data.url
+      iframe.src = src
       iframe.style.width = data.width || '100%'
       iframe.style.height = data.height || '900px'
       iframe.style.border = data.border || '0'
@@ -105,7 +113,7 @@ const fetchAndInjectShellcatchIframe = async (container) => {
       // remove prior injected iframes
       Array.from(container.querySelectorAll('iframe')).forEach(n=>n.remove())
       container.appendChild(iframe)
-      console.info('✅ Injected  iframe via fallback')
+      console.info('✅ Injected iframe via config response')
       return true
     } else {
       console.warn('Config endpoint returned no usable data', json)
