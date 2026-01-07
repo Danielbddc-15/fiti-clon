@@ -38,11 +38,19 @@ const fetchAndInjectShellcatchIframe = async (container) => {
       console.warn('Config endpoint returned non-JSON response', res && res.status)
       try {
         const localRes = await fetch(`${import.meta.env.BASE_URL}shellcatch-config.json`)
-        if (localRes && localRes.ok) {
-          const localJson = await localRes.json().catch(()=>null)
-          if (localJson && localJson.success && localJson.data && localJson.data.url) json = localJson
-          else { console.error('Local fallback config is invalid', localJson); return false }
-        } else { console.error('Local fallback not available', localRes && localRes.status); return false }
+          if (localRes && localRes.ok) {
+            const localJson = await localRes.json().catch(()=>null)
+            if (localJson && localJson.success && localJson.data && localJson.data.url) {
+              // Normalize relative URL to Vite base
+              const data = localJson.data
+              let url = data.url || ''
+              if (url && !/^https?:\/\//i.test(url)) {
+                url = `${import.meta.env.BASE_URL || '/'}${url.replace(/^\//, '')}`
+              }
+              localJson.data.url = url
+              json = localJson
+            } else { console.error('Local fallback config is invalid', localJson); return false }
+          } else { console.error('Local fallback not available', localRes && localRes.status); return false }
       } catch (err) { console.error('Error loading local fallback config', err); return false }
     }
 

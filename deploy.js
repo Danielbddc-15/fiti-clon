@@ -29,6 +29,20 @@ function deploy() {
     console.error('❌ No se encontró la carpeta dist');
     process.exit(1);
   }
+
+  // Ensure SPA routing works on GitHub Pages by providing a 404 fallback
+  // that serves the same content as index.html. This lets client-side
+  // routing (react-router) handle deep links like /progressive-improvement.
+  try {
+    const indexFile = path.join(distPath, 'index.html')
+    const fallbackFile = path.join(distPath, '404.html')
+    if (fs.existsSync(indexFile)) {
+      fs.copyFileSync(indexFile, fallbackFile)
+      console.log('ℹ️  Created 404.html fallback for SPA routing')
+    }
+  } catch (err) {
+    console.warn('⚠️  Could not create 404.html fallback:', err && err.message)
+  }
   
   console.log('🔄 Preparando deploy a GitHub Pages...');
   

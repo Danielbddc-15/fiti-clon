@@ -98,6 +98,14 @@ const fetchAndInjectShellcatchIframe = async (container) => {
         if (localRes && localRes.ok) {
           const localJson = await localRes.json().catch(()=>null)
           if (localJson && localJson.success && localJson.data && localJson.data.url) {
+            // Normalize URL: if the URL is relative, prefix with Vite base so it
+            // resolves correctly in production (served under a base path).
+            const data = localJson.data
+            let url = data.url || ''
+            if (url && !/^https?:\/\//i.test(url)) {
+              url = `${import.meta.env.BASE_URL || '/'}${url.replace(/^\//, '')}`
+            }
+            localJson.data.url = url
             json = localJson
           } else {
             console.error('Local fallback config is invalid', localJson)
