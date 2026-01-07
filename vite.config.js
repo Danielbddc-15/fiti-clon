@@ -10,14 +10,15 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      // Proxy the Shellcatch config endpoint to avoid origin-not-allowed
+      // Proxy config endpoint to avoid origin-not-allowed
       '/__shellcatch_config': {
         target: 'https://api-fiti-us-dev.shellcatch.com',
         changeOrigin: true,
         secure: true,
         // Ensure the upstream sees an Origin it accepts (best-effort)
         headers: {
-          origin: 'https://api-fiti-us-dev.shellcatch.com'
+          // Present a dev origin that the upstream service is more likely to accept
+          origin: 'http://localhost:5174'
         },
         rewrite: (path) => path.replace(/^\/__shellcatch_config/, '/v1/script/get-config-script')
       }

@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
+import { Routes, Route, Link } from 'react-router-dom'
+import ProgressiveImprovement from './ProgressiveImprovement'
 
 // Use hero image from fiti.global
 const HERO_BG = 'https://fiti.global/wp-content/uploads/2021/05/sea-684351-scaled.jpg'
@@ -71,7 +73,7 @@ const fetchAndInjectShellcatchIframe = async (container) => {
       console.warn('Config endpoint returned non-JSON response', res && res.status)
 
       try {
-        const localRes = await fetch('shellcatch-config.json')
+        const localRes = await fetch(`${import.meta.env.BASE_URL}shellcatch-config.json`)
         if (localRes && localRes.ok) {
           const localJson = await localRes.json().catch(()=>null)
           if (localJson && localJson.success && localJson.data && localJson.data.url) {
@@ -95,11 +97,11 @@ const fetchAndInjectShellcatchIframe = async (container) => {
       const iframe = document.createElement('iframe')
       iframe.src = data.url
       iframe.style.width = data.width || '100%'
-      iframe.style.height = data.height || '900px'
+      iframe.style.height = '100%'
       iframe.style.border = data.border || '0'
       iframe.style.transition = data.transition || 'none'
-      iframe.style.overflow = data.overflow || 'hidden'
-      iframe.setAttribute('scrolling', 'no')
+      iframe.style.overflow = 'auto'
+      iframe.setAttribute('scrolling', 'yes')
         // Allow common features for embedded content and avoid adding sandbox restrictions here
         // Note: if the remote host sends X-Frame-Options or CSP frame-ancestors that block embedding,
         // the iframe will still be blocked — that must be fixed on the provider side or via a proxy.
@@ -121,7 +123,7 @@ const fetchAndInjectShellcatchIframe = async (container) => {
   }
 }
 
-function Header({onProgressiveImprovementClick}){
+function Header(){
   return (
     <header className="site-header">
       <div className="container header-inner">
@@ -166,7 +168,7 @@ function Header({onProgressiveImprovementClick}){
                 <li><a href="#">Sign-up steps</a></li>
                 <li><a href="#">Candidate application</a></li>
                 <li><a href="#">FiTI Reports</a></li>
-                <li><a href="#" onClick={(e)=>{ e.preventDefault(); onProgressiveImprovementClick(); }}>Progressive improvement</a></li>
+                   <li><Link to="/progressive-improvement">Progressive improvement</Link></li>
                 <li><a href="#">Validation</a></li>
               </ul>
             </li>
@@ -239,14 +241,21 @@ function Hero(){
 
 // Feature card component + items
 function FeatureCard({icon,title,desc,isProgressiveImprovement,isActive,onClick}){
-  // Loading handled centrally in `App` when modal opens; no local side-effects here.
+  // If progressive-improvement card, make it a link to the dedicated page
+  if (isProgressiveImprovement) {
+    return (
+      <Link to="/progressive-improvement" className={`feature-card ${isProgressiveImprovement ? 'progressive-improvement-card' : ''} ${isActive ? 'active' : ''}`}>
+        <div className="feature-icon-shield">
+          <img src={icon} alt="" className="shield-icon" />
+        </div>
+        <h3>{title}</h3>
+        <p>{desc}</p>
+      </Link>
+    )
+  }
 
   return (
-    <div
-      className={`feature-card ${isProgressiveImprovement ? 'progressive-improvement-card' : ''} ${isActive ? 'active' : ''}`}
-      onClick={isProgressiveImprovement ? onClick : undefined}
-      style={isProgressiveImprovement ? { cursor: 'pointer' } : {}}
-    >
+    <div className={`feature-card ${isProgressiveImprovement ? 'progressive-improvement-card' : ''} ${isActive ? 'active' : ''}`}>
       <div className="feature-icon-shield">
         <img src={icon} alt="" className="shield-icon" />
       </div>
@@ -289,7 +298,7 @@ const items = [
   }
 ]
 
-function Features({activeProgressiveCard, toggleProgressiveCard}){
+function Features(){
   return (
     <section className="features" id="about">
       <div className="container">
@@ -302,8 +311,7 @@ function Features({activeProgressiveCard, toggleProgressiveCard}){
               title={it.title}
               desc={it.desc}
               isProgressiveImprovement={it.title === 'Progressive Improvement'}
-              isActive={it.title === 'Progressive Improvement' && activeProgressiveCard}
-              onClick={toggleProgressiveCard}
+              isActive={false}
             />
           ))}
         </div>
@@ -617,8 +625,7 @@ function Footer(){
 }
 
 export default function App(){
-  const [showTop, setShowTop] = useState(false)
-  const [activeProgressiveCard, setActiveProgressiveCard] = useState(false)
+  const [showTop, setShowTop] = React.useState(false)
 
   useEffect(()=>{
     const onScroll = () => setShowTop(window.scrollY > 300)
@@ -629,74 +636,24 @@ export default function App(){
 
   const scrollToTop = () => window.scrollTo({ top:0, behavior:'smooth' })
 
-  const toggleProgressiveCard = () => {
-    setActiveProgressiveCard(!activeProgressiveCard)
-  }
-
-  // When modal opens, load Shellcatch; when it closes, unload to force fresh load next time
-  useEffect(()=>{
-    let timer
-    if (activeProgressiveCard) {
-      // Wait a tick so the container is mounted into the DOM
-      timer = setTimeout(()=>{
-        // ensure container exists; the JSX renders it when activeProgressiveCard is true
-        const container = document.getElementById('shellcatch_container_v2')
-        if (!container) console.warn('Container not found at load time')
-        // remove any previous script and load fresh
-        unloadShellcatchScript()
-        loadShellcatchScript()
-        // After a short delay, if the container still has no injected content, try fallback
-        setTimeout(async ()=>{
-          const c = document.getElementById('shellcatch_container_v2')
-          if (!c) return
-          // If only the loading placeholder is present (or no children), try fallback
-          const hasContent = Array.from(c.children).some(ch => !ch.classList || !ch.classList.contains('shellcatch-loading'))
-          if (!hasContent) {
-            console.info('No content rendered by script, attempting fallback iframe injection')
-            await fetchAndInjectShellcatchIframe(c)
-          }
-        }, 1400)
-      }, 50)
-    } else {
-      unloadShellcatchScript()
-    }
-    return ()=>{ if (timer) clearTimeout(timer) }
-  }, [activeProgressiveCard])
-
   return (
     <div>
-      <Header onProgressiveImprovementClick={toggleProgressiveCard} />
-      <main>
-        <Hero />
-        <Features activeProgressiveCard={activeProgressiveCard} toggleProgressiveCard={toggleProgressiveCard} />
-        <FiTIStandard />
-        <Countries />
-        <News />
-        <Numbers />
-        <SocialStrip />
-      </main>
+      <Header />
+      <Routes>
+        <Route path="/" element={
+          <main>
+            <Hero />
+            <Features />
+            <FiTIStandard />
+            <Countries />
+            <News />
+            <Numbers />
+            <SocialStrip />
+          </main>
+        } />
+        <Route path="/progressive-improvement" element={<ProgressiveImprovement />} />
+      </Routes>
       <Footer />
-
-      {activeProgressiveCard && (
-        <div className="shellcatch-modal-overlay">
-          <div className="shellcatch-modal">
-            <button className="shellcatch-close" onClick={toggleProgressiveCard}>✕</button>
-            <div
-              id="shellcatch_container_v2"
-              data-shellcatch="true"
-              data-container="shellcatch"
-              data-dashboard="progressive-improvement"
-              role="region"
-              aria-label="Progressive Improvement Dashboard"
-              style={{ width: '100%', height: '100%' }}
-            >
-              <div className="shellcatch-loading">
-                <p>Cargando dashboard...</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <button className={`back-to-top ${showTop ? 'visible' : ''}`} aria-label="Back to top" onClick={scrollToTop}>↑</button>
     </div>
