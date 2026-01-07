@@ -100,6 +100,12 @@ const fetchAndInjectShellcatchIframe = async (container) => {
       iframe.style.transition = data.transition || 'none'
       iframe.style.overflow = data.overflow || 'hidden'
       iframe.setAttribute('scrolling', 'no')
+        // Allow common features for embedded content and avoid adding sandbox restrictions here
+        // Note: if the remote host sends X-Frame-Options or CSP frame-ancestors that block embedding,
+        // the iframe will still be blocked — that must be fixed on the provider side or via a proxy.
+        iframe.allow = 'fullscreen; geolocation; microphone; camera; autoplay'
+        iframe.setAttribute('allowfullscreen', '')
+        iframe.referrerPolicy = 'no-referrer'
       // remove prior injected iframes
       Array.from(container.querySelectorAll('iframe')).forEach(n=>n.remove())
       container.appendChild(iframe)
