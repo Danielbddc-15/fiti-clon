@@ -48,58 +48,46 @@ const unloadShellcatchScript = () => {
 const fetchAndInjectShellcatchIframe = async (container) => {
   if (!container) return
   try {
-    // If we're running on a hosted site (not localhost), prefer the
-    // local static fallback first to avoid CORS/origin blocked errors
-    // from the upstream Shellcatch API. In dev we still try proxies first.
-    const isLocal = /^(localhost|127\.|192\.168\.|::1)$/.test(window.location.hostname)
+    const isLocal = /^(localhost|127\.\.|192\.168\.|::1)$/.test(window.location.hostname)
     let res = null
-    if (!isLocal) {
+    let json = null
+    // Try configured public proxy first (build-time `VITE_PROXY_URL`)
+    const proxyUrl = import.meta.env.VITE_PROXY_URL || ''
+    if (proxyUrl) {
       try {
-        res = await fetch(`${import.meta.env.BASE_URL}shellcatch-config.json`)
-        if (res && res.ok) {
-          const localJson = await res.json().catch(()=>null)
-          if (localJson && localJson.success && localJson.data && localJson.data.url) {
-            // Use local JSON directly
-            json = localJson
-          }
-        }
+        const normalized = proxyUrl.replace(/\/$/, '')
+        res = await fetch(`${normalized}/shellcatch-config`)
       } catch (e) {
-        // fallthrough to try proxies/upstream below
         res = null
       }
     }
+    // If still no response, try local dev proxy when running locally
     if (!res && isLocal) {
-      // Try local server-side proxy first (server/proxy.js)
-      try {
-        res = await fetch('http://localhost:3000/shellcatch-config')
-      } catch (e) {
-        // ignore, try vite proxy next
-      }
+      try { res = await fetch('http://localhost:3000/shellcatch-config') } catch(e){ res = null }
     }
-    if (!res) res = await fetch(`/__shellcatch_config`)
+    // If still no response, try Vite's dev proxy path (works in dev server)
+    if (!res) {
+      try { res = await fetch('/__shellcatch_config') } catch(e){ res = null }
+    }
     // Defensive parsing: check content-type before calling res.json()
     const contentType = (res && res.headers && res.headers.get) ? (res.headers.get('content-type') || '') : ''
-    let json = null
-    if (contentType.includes('application/json')) {
+    if (res && contentType.includes('application/json')) {
       try {
         json = await res.json()
       } catch (parseErr) {
         const text = await res.text().catch(() => null)
         console.error('Error parsing JSON from config endpoint, response text:', text)
-        return false
+        json = null
       }
-    } else {
-      // Not JSON (likely HTML index page). Try local static fallback `public/shellcatch-config.json`.
-      const text = await res.text().catch(() => null)
-      console.warn('Config endpoint returned non-JSON response', res && res.status)
-
+    }
+    // If we don't have JSON from the endpoints above, fall back to the
+    // bundled static `shellcatch-config.json` shipped with the site.
+    if (!json) {
       try {
         const localRes = await fetch(`${import.meta.env.BASE_URL}shellcatch-config.json`)
         if (localRes && localRes.ok) {
           const localJson = await localRes.json().catch(()=>null)
           if (localJson && localJson.success && localJson.data && localJson.data.url) {
-            // Normalize URL: if the URL is relative, prefix with Vite base so it
-            // resolves correctly in production (served under a base path).
             const data = localJson.data
             let url = data.url || ''
             if (url && !/^https?:\/\//i.test(url)) {
@@ -107,17 +95,10 @@ const fetchAndInjectShellcatchIframe = async (container) => {
             }
             localJson.data.url = url
             json = localJson
-          } else {
-            console.error('Local fallback config is invalid', localJson)
-            return false
           }
-        } else {
-          console.error('Local fallback not available', localRes && localRes.status)
-          return false
         }
       } catch (localErr) {
         console.error('Error loading local fallback config', localErr)
-        return false
       }
     }
 
