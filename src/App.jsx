@@ -54,7 +54,24 @@ const fetchAndInjectShellcatchIframe = async (container) => {
       // ignore, try vite proxy next
     }
     if (!res) res = await fetch(`/__shellcatch_config`)
-    const json = await res.json()
+    // Defensive parsing: check content-type before calling res.json()
+    const contentType = (res && res.headers && res.headers.get) ? (res.headers.get('content-type') || '') : ''
+    let json = null
+    if (contentType.includes('application/json')) {
+      try {
+        json = await res.json()
+      } catch (parseErr) {
+        const text = await res.text().catch(() => null)
+        console.error('Error parsing JSON from config endpoint, response text:', text)
+        return false
+      }
+    } else {
+      // Not JSON (likely HTML index page). Log the response for debugging.
+      const text = await res.text().catch(() => null)
+      console.error('Config endpoint returned non-JSON response', res && res.status, text)
+      return false
+    }
+
     if (json && json.success && json.data && json.data.url) {
       const data = json.data
       const iframe = document.createElement('iframe')
