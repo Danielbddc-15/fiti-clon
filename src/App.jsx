@@ -71,7 +71,7 @@ const fetchAndInjectShellcatchIframe = async (container) => {
       console.warn('Config endpoint returned non-JSON response', res && res.status)
 
       try {
-        const localRes = await fetch('/shellcatch-config.json')
+        const localRes = await fetch('shellcatch-config.json')
         if (localRes && localRes.ok) {
           const localJson = await localRes.json().catch(()=>null)
           if (localJson && localJson.success && localJson.data && localJson.data.url) {
