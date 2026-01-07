@@ -27,7 +27,15 @@ const fetchAndInjectShellcatchIframe = async (container) => {
   if (!container) return false
   try {
     let res = null
-    try { res = await fetch('http://localhost:3000/shellcatch-config') } catch(e){}
+    // Try configured public proxy first (from Cloudflare Worker) if provided
+    const proxyUrl = import.meta.env.VITE_PROXY_URL || ''
+    if (!res && proxyUrl) {
+      try {
+        const normalized = proxyUrl.replace(/\/$/, '')
+        res = await fetch(`${normalized}/shellcatch-config`)
+      } catch (e) { res = null }
+    }
+    try { if (!res) res = await fetch('http://localhost:3000/shellcatch-config') } catch(e){}
     if (!res) res = await fetch('/__shellcatch_config')
     const contentType = (res && res.headers && res.headers.get) ? (res.headers.get('content-type') || '') : ''
     let json = null
@@ -93,15 +101,18 @@ export default function ProgressiveImprovement(){
       if (!c) return
       const hasContent = Array.from(c.children).some(ch => !ch.classList || !ch.classList.contains('shellcatch-loading'))
       if (!hasContent) {
-        // Try local static config first when hosted
-        const isLocal = /^(localhost|127\.|192\.168\.|::1)$/.test(window.location.hostname)
-        if (!isLocal) {
+        // Try proxy (or dev proxies) first; only fall back to the bundled static
+        // config when proxy attempts fail. This ensures hosted deployments which
+        // set `VITE_PROXY_URL` will use the public proxy instead of the local
+        // placeholder file.
+        const usedProxy = await fetchAndInjectShellcatchIframe(c)
+        if (!usedProxy) {
+          // fallback: try local static config
           try {
             const localRes = await fetch(`${import.meta.env.BASE_URL}shellcatch-config.json`)
             if (localRes && localRes.ok) {
               const localJson = await localRes.json().catch(()=>null)
               if (localJson && localJson.success && localJson.data && localJson.data.url) {
-                // inject iframe directly from localJson
                 const data = localJson.data
                 const iframe = document.createElement('iframe')
                 iframe.src = data.url
@@ -118,11 +129,9 @@ export default function ProgressiveImprovement(){
               }
             }
           } catch (e) {
-            // fallthrough to generic fallback below
+            // nothing else to do
           }
         }
-
-        await fetchAndInjectShellcatchIframe(c)
       }
     }, 800)
     return ()=>{ clearTimeout(t); unloadShellcatchScript() }
