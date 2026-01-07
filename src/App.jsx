@@ -46,14 +46,16 @@ const unloadShellcatchScript = () => {
 const fetchAndInjectShellcatchIframe = async (container) => {
   if (!container) return
   try {
-    // Try local server-side proxy first (server/proxy.js)
+    // Fetch directly from upstream API (whitelisted for the hosted site)
     let res = null
     try {
-      res = await fetch('http://localhost:3000/shellcatch-config')
+      res = await fetch('https://api-fiti-us-dev.shellcatch.com/v1/script/get-config-script', {
+        headers: { Accept: 'application/json' }
+      })
     } catch (e) {
-      // ignore, try vite proxy next
+      // upstream request failed (network or blocked). We'll fall back to a local static file below.
+      res = null
     }
-    if (!res) res = await fetch(`/__shellcatch_config`)
     // Defensive parsing: check content-type before calling res.json()
     const contentType = (res && res.headers && res.headers.get) ? (res.headers.get('content-type') || '') : ''
     let json = null
