@@ -9,6 +9,11 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+// Lightweight root endpoint for health checks (returns 200)
+app.get('/', (req, res) => {
+  res.json({ ok: true })
+})
+
 app.get('/shellcatch-config', async (req, res) => {
   try {
     const upstream = 'https://api-fiti-us-dev.shellcatch.com/v1/script/get-config-script'
@@ -41,5 +46,6 @@ app.get('/shellcatch-config', async (req, res) => {
   }
 })
 
-const PORT = process.env.PROXY_PORT || 3000
-app.listen(PORT, () => console.log(`Shellcatch proxy listening on http://localhost:${PORT}`))
+// Prefer hosting provider port (process.env.PORT), fall back to PROXY_PORT for local overrides, then 3000
+const PORT = process.env.PORT || process.env.PROXY_PORT || 3000
+app.listen(PORT, () => console.log(`Shellcatch proxy listening on http://0.0.0.0:${PORT}`))
