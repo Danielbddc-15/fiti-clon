@@ -66,10 +66,28 @@ const fetchAndInjectShellcatchIframe = async (container) => {
         return false
       }
     } else {
-      // Not JSON (likely HTML index page). Log the response for debugging.
+      // Not JSON (likely HTML index page). Try local static fallback `public/shellcatch-config.json`.
       const text = await res.text().catch(() => null)
-      console.error('Config endpoint returned non-JSON response', res && res.status, text)
-      return false
+      console.warn('Config endpoint returned non-JSON response', res && res.status)
+
+      try {
+        const localRes = await fetch('/shellcatch-config.json')
+        if (localRes && localRes.ok) {
+          const localJson = await localRes.json().catch(()=>null)
+          if (localJson && localJson.success && localJson.data && localJson.data.url) {
+            json = localJson
+          } else {
+            console.error('Local fallback config is invalid', localJson)
+            return false
+          }
+        } else {
+          console.error('Local fallback not available', localRes && localRes.status)
+          return false
+        }
+      } catch (localErr) {
+        console.error('Error loading local fallback config', localErr)
+        return false
+      }
     }
 
     if (json && json.success && json.data && json.data.url) {
