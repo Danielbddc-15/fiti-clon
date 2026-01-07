@@ -3,16 +3,93 @@ import React, { useEffect, useState } from 'react'
 // Use hero image from fiti.global
 const HERO_BG = 'https://fiti.global/wp-content/uploads/2021/05/sea-684351-scaled.jpg'
 
-function Header(){
+// Function to load Shellcatch script when needed
+const loadShellcatchScript = () => {
+  // Remove any existing script first
+  const existingScript = document.querySelector('script[src="https://api-fiti-us-dev.shellcatch.com/static/script_v2.js"]')
+  if (existingScript) {
+    console.log('🗑️ Removing previous script')
+    existingScript.remove()
+  }
+
+  console.log('📥 Loading script...')
+  const script = document.createElement('script')
+  script.id = 'shellcatch-script'
+  script.src = 'https://api-fiti-us-dev.shellcatch.com/static/script_v2.js'
+  script.async = true
+  script.onload = () => {
+    console.log('✅ Script loaded successfully')
+  }
+  script.onerror = () => {
+    console.error('❌ Failed to load script')
+  }
+  document.body.appendChild(script)
+}
+
+// Remove/unload Shellcatch script and cleanup container
+const unloadShellcatchScript = () => {
+  const existing = document.getElementById('shellcatch-script') || document.querySelector('script[src="https://api-fiti-us-dev.shellcatch.com/static/script_v2.js"]')
+  if (existing) {
+    console.log('🗑️ Removing Shellcatch script')
+    existing.remove()
+  }
+  const container = document.getElementById('shellcatch_container_v2')
+  if (container) {
+    // remove iframes or other injected children except loading placeholder
+    Array.from(container.children).forEach(child => {
+      if (!child.classList || !child.classList.contains('shellcatch-loading')) child.remove()
+    })
+  }
+}
+
+// Fallback: fetch config from Shellcatch API and inject iframe manually
+const fetchAndInjectShellcatchIframe = async (container) => {
+  if (!container) return
+  try {
+    // Try local server-side proxy first (server/proxy.js)
+    let res = null
+    try {
+      res = await fetch('http://localhost:3000/shellcatch-config')
+    } catch (e) {
+      // ignore, try vite proxy next
+    }
+    if (!res) res = await fetch(`/__shellcatch_config`)
+    const json = await res.json()
+    if (json && json.success && json.data && json.data.url) {
+      const data = json.data
+      const iframe = document.createElement('iframe')
+      iframe.src = data.url
+      iframe.style.width = data.width || '100%'
+      iframe.style.height = data.height || '900px'
+      iframe.style.border = data.border || '0'
+      iframe.style.transition = data.transition || 'none'
+      iframe.style.overflow = data.overflow || 'hidden'
+      iframe.setAttribute('scrolling', 'no')
+      // remove prior injected iframes
+      Array.from(container.querySelectorAll('iframe')).forEach(n=>n.remove())
+      container.appendChild(iframe)
+      console.info('✅ Injected  iframe via fallback')
+      return true
+    } else {
+      console.warn('Config endpoint returned no usable data', json)
+      return false
+    }
+  } catch (err) {
+    console.warn('Error fetching config:', err)
+    return false
+  }
+}
+
+function Header({onProgressiveImprovementClick}){
   return (
     <header className="site-header">
       <div className="container header-inner">
         <div className="brand">
           <div className="logo-container">
             <a href="#" className="logo-link" onClick={(e)=>{ e.preventDefault(); window.location.reload(); }} aria-label="Reload page">
-              <img 
-                src="/fiti-clon/images/logo.png" 
-                alt="FiTI Logo" 
+              <img
+                src="/fiti-clon/images/logo.png"
+                alt="FiTI Logo"
                 className="fiti-logo"
               />
             </a>
@@ -48,7 +125,7 @@ function Header(){
                 <li><a href="#">Sign-up steps</a></li>
                 <li><a href="#">Candidate application</a></li>
                 <li><a href="#">FiTI Reports</a></li>
-                <li><a href="#">Progressive improvement</a></li>
+                <li><a href="#" onClick={(e)=>{ e.preventDefault(); onProgressiveImprovementClick(); }}>Progressive improvement</a></li>
                 <li><a href="#">Validation</a></li>
               </ul>
             </li>
@@ -120,9 +197,15 @@ function Hero(){
 }
 
 // Feature card component + items
-function FeatureCard({icon,title,desc}){
+function FeatureCard({icon,title,desc,isProgressiveImprovement,isActive,onClick}){
+  // Loading handled centrally in `App` when modal opens; no local side-effects here.
+
   return (
-    <div className="feature-card">
+    <div
+      className={`feature-card ${isProgressiveImprovement ? 'progressive-improvement-card' : ''} ${isActive ? 'active' : ''}`}
+      onClick={isProgressiveImprovement ? onClick : undefined}
+      style={isProgressiveImprovement ? { cursor: 'pointer' } : {}}
+    >
       <div className="feature-icon-shield">
         <img src={icon} alt="" className="shield-icon" />
       </div>
@@ -165,13 +248,23 @@ const items = [
   }
 ]
 
-function Features(){
+function Features({activeProgressiveCard, toggleProgressiveCard}){
   return (
     <section className="features" id="about">
       <div className="container">
         <div className="section-header"><h2>Core characteristics of the FiTI</h2></div>
         <div className="features-grid">
-          {items.map((it,idx)=> <FeatureCard key={idx} icon={it.icon} title={it.title} desc={it.desc} />)}
+          {items.map((it,idx)=> (
+            <FeatureCard
+              key={idx}
+              icon={it.icon}
+              title={it.title}
+              desc={it.desc}
+              isProgressiveImprovement={it.title === 'Progressive Improvement'}
+              isActive={it.title === 'Progressive Improvement' && activeProgressiveCard}
+              onClick={toggleProgressiveCard}
+            />
+          ))}
         </div>
       </div>
     </section>
@@ -484,6 +577,7 @@ function Footer(){
 
 export default function App(){
   const [showTop, setShowTop] = useState(false)
+  const [activeProgressiveCard, setActiveProgressiveCard] = useState(false)
 
   useEffect(()=>{
     const onScroll = () => setShowTop(window.scrollY > 300)
@@ -494,12 +588,46 @@ export default function App(){
 
   const scrollToTop = () => window.scrollTo({ top:0, behavior:'smooth' })
 
+  const toggleProgressiveCard = () => {
+    setActiveProgressiveCard(!activeProgressiveCard)
+  }
+
+  // When modal opens, load Shellcatch; when it closes, unload to force fresh load next time
+  useEffect(()=>{
+    let timer
+    if (activeProgressiveCard) {
+      // Wait a tick so the container is mounted into the DOM
+      timer = setTimeout(()=>{
+        // ensure container exists; the JSX renders it when activeProgressiveCard is true
+        const container = document.getElementById('shellcatch_container_v2')
+        if (!container) console.warn('Container not found at load time')
+        // remove any previous script and load fresh
+        unloadShellcatchScript()
+        loadShellcatchScript()
+        // After a short delay, if the container still has no injected content, try fallback
+        setTimeout(async ()=>{
+          const c = document.getElementById('shellcatch_container_v2')
+          if (!c) return
+          // If only the loading placeholder is present (or no children), try fallback
+          const hasContent = Array.from(c.children).some(ch => !ch.classList || !ch.classList.contains('shellcatch-loading'))
+          if (!hasContent) {
+            console.info('No content rendered by script, attempting fallback iframe injection')
+            await fetchAndInjectShellcatchIframe(c)
+          }
+        }, 1400)
+      }, 50)
+    } else {
+      unloadShellcatchScript()
+    }
+    return ()=>{ if (timer) clearTimeout(timer) }
+  }, [activeProgressiveCard])
+
   return (
     <div>
-      <Header />
+      <Header onProgressiveImprovementClick={toggleProgressiveCard} />
       <main>
         <Hero />
-        <Features />
+        <Features activeProgressiveCard={activeProgressiveCard} toggleProgressiveCard={toggleProgressiveCard} />
         <FiTIStandard />
         <Countries />
         <News />
@@ -507,6 +635,27 @@ export default function App(){
         <SocialStrip />
       </main>
       <Footer />
+
+      {activeProgressiveCard && (
+        <div className="shellcatch-modal-overlay">
+          <div className="shellcatch-modal">
+            <button className="shellcatch-close" onClick={toggleProgressiveCard}>✕</button>
+            <div
+              id="shellcatch_container_v2"
+              data-shellcatch="true"
+              data-container="shellcatch"
+              data-dashboard="progressive-improvement"
+              role="region"
+              aria-label="Progressive Improvement Dashboard"
+              style={{ width: '100%', height: '100%' }}
+            >
+              <div className="shellcatch-loading">
+                <p>Cargando dashboard...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <button className={`back-to-top ${showTop ? 'visible' : ''}`} aria-label="Back to top" onClick={scrollToTop}>↑</button>
     </div>
