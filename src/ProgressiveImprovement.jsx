@@ -75,14 +75,47 @@ export default function ProgressiveImprovement(){
   const navigate = useNavigate()
 
   useEffect(()=>{
-    // load script and try fallback if nothing renders
+    // In production (hosted) prefer local static fallback first to avoid blocked
+    // upstream requests. In dev we still try to load the script which will call
+    // upstream or the proxy.
     unloadShellcatchScript()
     loadShellcatchScript()
     const t = setTimeout(async ()=>{
       const c = document.getElementById('shellcatch_container_v2')
       if (!c) return
       const hasContent = Array.from(c.children).some(ch => !ch.classList || !ch.classList.contains('shellcatch-loading'))
-      if (!hasContent) await fetchAndInjectShellcatchIframe(c)
+      if (!hasContent) {
+        // Try local static config first when hosted
+        const isLocal = /^(localhost|127\.|192\.168\.|::1)$/.test(window.location.hostname)
+        if (!isLocal) {
+          try {
+            const localRes = await fetch(`${import.meta.env.BASE_URL}shellcatch-config.json`)
+            if (localRes && localRes.ok) {
+              const localJson = await localRes.json().catch(()=>null)
+              if (localJson && localJson.success && localJson.data && localJson.data.url) {
+                // inject iframe directly from localJson
+                const data = localJson.data
+                const iframe = document.createElement('iframe')
+                iframe.src = data.url
+                iframe.style.width = data.width || '100%'
+                iframe.style.height = '100%'
+                iframe.style.border = data.border || '0'
+                iframe.style.overflow = 'auto'
+                iframe.setAttribute('scrolling', 'yes')
+                iframe.allow = 'fullscreen; geolocation; microphone; camera; autoplay'
+                iframe.setAttribute('allowfullscreen', '')
+                Array.from(c.querySelectorAll('iframe')).forEach(n=>n.remove())
+                c.appendChild(iframe)
+                return
+              }
+            }
+          } catch (e) {
+            // fallthrough to generic fallback below
+          }
+        }
+
+        await fetchAndInjectShellcatchIframe(c)
+      }
     }, 800)
     return ()=>{ clearTimeout(t); unloadShellcatchScript() }
   }, [])

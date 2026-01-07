@@ -48,12 +48,33 @@ const unloadShellcatchScript = () => {
 const fetchAndInjectShellcatchIframe = async (container) => {
   if (!container) return
   try {
-    // Try local server-side proxy first (server/proxy.js)
+    // If we're running on a hosted site (not localhost), prefer the
+    // local static fallback first to avoid CORS/origin blocked errors
+    // from the upstream Shellcatch API. In dev we still try proxies first.
+    const isLocal = /^(localhost|127\.|192\.168\.|::1)$/.test(window.location.hostname)
     let res = null
-    try {
-      res = await fetch('http://localhost:3000/shellcatch-config')
-    } catch (e) {
-      // ignore, try vite proxy next
+    if (!isLocal) {
+      try {
+        res = await fetch(`${import.meta.env.BASE_URL}shellcatch-config.json`)
+        if (res && res.ok) {
+          const localJson = await res.json().catch(()=>null)
+          if (localJson && localJson.success && localJson.data && localJson.data.url) {
+            // Use local JSON directly
+            json = localJson
+          }
+        }
+      } catch (e) {
+        // fallthrough to try proxies/upstream below
+        res = null
+      }
+    }
+    if (!res && isLocal) {
+      // Try local server-side proxy first (server/proxy.js)
+      try {
+        res = await fetch('http://localhost:3000/shellcatch-config')
+      } catch (e) {
+        // ignore, try vite proxy next
+      }
     }
     if (!res) res = await fetch(`/__shellcatch_config`)
     // Defensive parsing: check content-type before calling res.json()
