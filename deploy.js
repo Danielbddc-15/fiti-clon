@@ -60,6 +60,9 @@ function deploy() {
   
   // Inicializar nuevo repo
   runCommand('git init');
+  // Ensure git has a committer identity in CI environments
+  runCommand('git config user.email "actions@github.com"');
+  runCommand('git config user.name "github-actions[bot]"');
   runCommand('git add .');
   
   // Hacer commit solo si hay cambios
