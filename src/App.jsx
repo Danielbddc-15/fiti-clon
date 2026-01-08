@@ -8,7 +8,9 @@ const HERO_BG = 'https://fiti.global/wp-content/uploads/2021/05/sea-684351-scale
 // Function to load Shellcatch script when needed
 const loadShellcatchScript = () => {
   // Remove any existing script first
-  const existingScript = document.querySelector('script[src="https://api-fiti-us-dev.shellcatch.com/static/script_v2.js"]')
+    const proxyUrl = import.meta.env.VITE_PROXY_URL || ''
+    // If a public proxy URL is provided at build time via `VITE_PROXY_URL`,
+    // prefer it. Only try the local dev proxy when running in development.
   if (existingScript) {
     console.log('🗑️ Removing previous script')
     existingScript.remove()
@@ -17,10 +19,10 @@ const loadShellcatchScript = () => {
   console.log('📥 Loading script...')
   const script = document.createElement('script')
   script.id = 'shellcatch-script'
-  script.src = 'https://api-fiti-us-dev.shellcatch.com/static/script_v2.js'
-  script.async = true
-  script.onload = () => {
-    console.log('✅ Script loaded successfully')
+    // If still no response, try local dev proxy only in development.
+    if (!res && import.meta.env.DEV) {
+      try { res = await fetch('http://localhost:3000/shellcatch-config') } catch(e){ res = null }
+    }
   }
   script.onerror = () => {
     console.error('❌ Failed to load script')

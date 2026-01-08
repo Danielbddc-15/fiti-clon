@@ -27,7 +27,9 @@ const fetchAndInjectShellcatchIframe = async (container) => {
   if (!container) return false
   try {
     let res = null
-    // Try configured public proxy first (from Cloudflare Worker) if provided
+    // Try configured public proxy first (VITE_PROXY_URL). Only attempt the
+    // localhost proxy in development mode to avoid hitting localhost from
+    // hosted clients.
     const proxyUrl = import.meta.env.VITE_PROXY_URL || ''
     if (!res && proxyUrl) {
       try {
@@ -35,7 +37,9 @@ const fetchAndInjectShellcatchIframe = async (container) => {
         res = await fetch(`${normalized}/shellcatch-config`)
       } catch (e) { res = null }
     }
-    try { if (!res) res = await fetch('http://localhost:3000/shellcatch-config') } catch(e){}
+    if (!res && import.meta.env.DEV) {
+      try { res = await fetch('http://localhost:3000/shellcatch-config') } catch(e){ res = null }
+    }
     if (!res) res = await fetch('/__shellcatch_config')
     const contentType = (res && res.headers && res.headers.get) ? (res.headers.get('content-type') || '') : ''
     let json = null
