@@ -73,12 +73,17 @@ function deploy() {
   
   runCommand('git branch -M main');
   
-  // Verificar si ya existe el remote
+  // Verificar si ya existe el remote. In CI we may have a token available
+  // as `GITHUB_TOKEN` — use it to authenticate the push to GitHub to avoid
+  // exit code 128 from unauthenticated `git push` attempts.
+  const repoUrl = 'github.com/Danielbddc-15/fiti-clon.git'
+  const githubToken = process.env.GITHUB_TOKEN || process.env.PROVIDER_GITHUB_TOKEN || ''
+  const authRemote = githubToken ? `https://x-access-token:${githubToken}@${repoUrl}` : `https://${repoUrl}`
   try {
     execSync('git remote get-url origin', { stdio: 'pipe' });
-    runCommand('git remote set-url origin https://github.com/Danielbddc-15/fiti-clon.git');
+    runCommand(`git remote set-url origin ${authRemote}`);
   } catch (error) {
-    runCommand('git remote add origin https://github.com/Danielbddc-15/fiti-clon.git');
+    runCommand(`git remote add origin ${authRemote}`);
   }
   
   // 4. Push a gh-pages
