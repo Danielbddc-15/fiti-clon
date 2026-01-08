@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+// Public proxy URL (set at build time via VITE_PROXY_URL). Keep empty string
+// when not configured so checks like `if (proxyUrl)` are safe.
+const proxyUrl = import.meta.env.VITE_PROXY_URL || ''
+
 // Helper: load the Shellcatch script
 const loadShellcatchScript = () => {
   const existingScript = document.querySelector('script[src="https://api-fiti-us-dev.shellcatch.com/static/script_v2.js"]')
@@ -30,7 +34,9 @@ const fetchAndInjectShellcatchIframe = async (container) => {
     // Try configured public proxy first (VITE_PROXY_URL). Only attempt the
     // localhost proxy in development mode to avoid hitting localhost from
     // hosted clients.
-    const proxyUrl = import.meta.env.VITE_PROXY_URL || ''
+      if (!res && import.meta.env.DEV) {
+        try { res = await fetch('/__shellcatch_config') } catch(e){ res = null }
+      }
     if (!res && proxyUrl) {
       try {
         const normalized = proxyUrl.replace(/\/$/, '')

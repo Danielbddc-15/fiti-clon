@@ -65,8 +65,8 @@ const fetchAndInjectShellcatchIframe = async (container) => {
     if (!res && isLocal) {
       try { res = await fetch('http://localhost:3000/shellcatch-config') } catch(e){ res = null }
     }
-    // If still no response, try Vite's dev proxy path (works in dev server)
-    if (!res) {
+    // If still no response, try Vite's dev proxy path (only in dev server).
+    if (!res && import.meta.env.DEV) {
       try { res = await fetch('/__shellcatch_config') } catch(e){ res = null }
     }
     // Defensive parsing: check content-type before calling res.json()
