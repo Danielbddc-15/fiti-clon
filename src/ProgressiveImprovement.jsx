@@ -2,7 +2,9 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 // Public proxy URL (set at build time via VITE_PROXY_URL). Keep empty string
-// when not configured so checks like `if (proxyUrl)` are safe.
+// when not configured so checks like `if (proxyUrl)` are safe. We also
+// support a runtime-config file `runtime-proxy.json` in `public/` so the
+// deployed build can be pointed to a proxy without rebuilding.
 const proxyUrl = import.meta.env.VITE_PROXY_URL || ''
 
 // Helper: load the Shellcatch script
@@ -29,17 +31,29 @@ const unloadShellcatchScript = () => {
 
 const fetchAndInjectShellcatchIframe = async (container) => {
   if (!container) return false
-  try {
+    try {
     let res = null
+      // If no build-time proxy is set, try to load a runtime proxy file
+      let runtimeProxy = ''
+      if (!proxyUrl) {
+        try {
+          const rp = await fetch(`${import.meta.env.BASE_URL}runtime-proxy.json`)
+          if (rp && rp.ok) {
+            const rpjson = await rp.json().catch(()=>null)
+            runtimeProxy = (rpjson && rpjson.proxy) ? rpjson.proxy : ''
+          }
+        } catch (e) { /* ignore */ }
+      }
     // Try configured public proxy first (VITE_PROXY_URL). Only attempt the
     // localhost proxy in development mode to avoid hitting localhost from
     // hosted clients.
       if (!res && import.meta.env.DEV) {
         try { res = await fetch('/__shellcatch_config') } catch(e){ res = null }
       }
-    if (!res && proxyUrl) {
+    const effectiveProxy = proxyUrl || runtimeProxy || ''
+    if (!res && effectiveProxy) {
       try {
-        const normalized = proxyUrl.replace(/\/$/, '')
+        const normalized = effectiveProxy.replace(/\/$/, '')
         res = await fetch(`${normalized}/shellcatch-config`)
       } catch (e) { res = null }
     }

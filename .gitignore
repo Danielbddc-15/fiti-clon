@@ -3,3 +3,5 @@ dist/
 node_modules/.cache/
 *.log
 .DS_Store
+# Ensure runtime static config is tracked
+!public/runtime-proxy.json
