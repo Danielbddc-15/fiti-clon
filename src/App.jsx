@@ -276,31 +276,20 @@ function FeatureCard({icon,title,desc,isProgressiveImprovement,isActive,onClick}
 }
 
 const items = [
-    try {
-      let res = null
-      // Try configured public proxy first (VITE_PROXY_URL). Also support
-      // a runtime proxy file so the hosted build can be redirected without
-      // rebuilding.
-      const proxyUrl = import.meta.env.VITE_PROXY_URL || ''
-      let runtimeProxy = ''
-      if (!proxyUrl) {
-        try {
-          const rp = await fetch(`${import.meta.env.BASE_URL}runtime-proxy.json`)
-          if (rp && rp.ok) {
-            const rpjson = await rp.json().catch(()=>null)
-            runtimeProxy = (rpjson && rpjson.proxy) ? rpjson.proxy : ''
-          }
-        } catch (e) { /* ignore */ }
-      }
-      const effectiveProxy = proxyUrl || runtimeProxy || ''
-      if (!res && effectiveProxy) {
-        try {
-          const normalized = effectiveProxy.replace(/\/$/, '')
-          res = await fetch(`${normalized}/shellcatch-config`)
-        } catch (e) { res = null }
-      }
-    desc:'Transparency requires a two-sided approach: making data available in the public domain, and ensuring that stakeholders can draw reliable conclusions from it.',
-    icon:'/fiti-clon/images/icons/visibility-usability.png'
+  { 
+    title:'Fisheries Management',
+    desc:'The FiTI focuses on public access to information for 12 thematic areas of marine capture fisheries, such as fishing licenses, vessel registry, catch data, subsidies and beneficial ownership.',
+    icon:'/fiti-clon/images/icons/fisheries-management.png'
+  },
+  { 
+    title:'Collective Action',
+    desc:'Transparency needs trust! This is why the FiTI is implemented through National Multi-Stakeholder Groups, equally represented by government, companies and civil society.',
+    icon:'/fiti-clon/images/icons/collective-action.png'
+  },
+  {
+    title: 'Transparency & Usability',
+    desc: 'Transparency requires a two-sided approach: making data available in the public domain, and ensuring that stakeholders can draw reliable conclusions from it.',
+    icon: '/fiti-clon/images/icons/visibility-usability.png'
   },
   { 
     title:'Progressive Improvement',
@@ -312,6 +301,7 @@ const items = [
     desc:'The FiTI does not replace or duplicate existing government systems. Instead, the need for national authorities to develop and strengthen their own systems for collecting and publishing information online is emphasised.',
     icon:'/fiti-clon/images/icons/quality-source.png'
   },
+
   { 
     title:'Robust Assurance',
     desc:'The FiTI International Board undertakes regular evaluations to verify compliance of all participating countries against the FiTI Standard. This covers the provision of FiTI Reports, the meaningful involvement of stakeholders, as well as the impact of the FiTI in the country.',
